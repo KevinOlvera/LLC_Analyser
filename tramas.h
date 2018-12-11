@@ -185,3 +185,15 @@ char* frameF(int i)
 {
 	return T[i];
 }
+
+char supervision[][5]={"RR","RNR","REJ","SREJ"};
+
+char uc[][30]={"UI","RIM","-","SARM","-","-","-","SABM","DISC","UP","-",
+"SARME","-","-","-","SABME","SNRM","-","-","RSET","-","-","-","XID","-","-","-","SNRME"};
+
+char ur[][30]={"UI","RIM","-","-","-","-","-","-","RD","-","-","-","UA","-",
+"-","-","-","FRMR","-","-","-","-","-","XID","-","-","-","DM"};
+
+char hardware[][15]={"Ethernet","Token Ring","Frame Relog","Atm"};
+
+char result[15];

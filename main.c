@@ -1,17 +1,5 @@
 #include "tramas.h"
 
-char supervision[][5]={"RR","RNR","REJ","SREJ"};
-
-char uc[][30]={"UI","RIM","-","SARM","-","-","-","SABM","DISC","UP","-",
-"SARME","-","-","-","SABME","SNRM","-","-","RSET","-","-","-","XID","-","-","-","SNRME"};
-
-char ur[][30]={"UI","RIM","-","-","-","-","-","-","RD","-","-","-","UA","-",
-"-","-","-","FRMR","-","-","-","-","-","XID","-","-","-","DM"};
-
-char hardware[][15]={"Ethernet","Token Ring","Frame Relog","Atm"};
-
-char result[15];
-
 int GetData(unsigned char trama[]);
 int IP(char T[]);
 void checksum(unsigned char T[],unsigned char tam,unsigned char haha,unsigned char jaja);
