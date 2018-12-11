@@ -1,7 +1,4 @@
-#include <stdio.h>
-#include <string.h>
 #include "tramas.h"
-#include "tramas_2.h"
 
 char supervision[][5]={"RR","RNR","REJ","SREJ"};
 
@@ -13,9 +10,7 @@ char ur[][30]={"UI","RIM","-","-","-","-","-","-","RD","-","-","-","UA","-",
 
 char hardware[][15]={"Ethernet","Token Ring","Frame Relog","Atm"};
 
-
 char result[15];
-
 
 int GetData(unsigned char trama[]);
 int IP(char T[]);
@@ -34,20 +29,14 @@ int main(int argc,char**argv)
     {
      //printf("\033[1;%dm",j);
       if(j==36)
-      j=30;
+        j=30;
       if(i+1<10)
       {
         printf("\t*----------------------------------------------*\n");
         printf("\t| Trama :  %i                                   |\n",i+1);
+        printf("\t| %s\n",result);
       }
-      else
-      {
-        printf("\t*----------------------------------------------*\n");
-        printf("\t| Trama :  %i                                  |\n",i+1);
-      }
-      printf("\t|                %s                            \n",result);
-      printf("\t|                                              |\n");
-
+    
     }
     strcpy(result," ");
 }
@@ -246,9 +235,9 @@ int IP(char T[])
   else if((T[23]&31)==17)
     sprintf(result+strlen(result),"  UDP");
 
-  unsigned char jaja=T[25],haha=T[24];
-  sprintf(result+strlen(result),"\n\t|Checksum teorico:  %02x %02x \n\t|Checksum Calculado: ",haha,jaja);
-  checksum(T,ihl,haha,jaja);
+  unsigned char chsum_c=T[25], chsum_t=T[24];
+  sprintf(result+strlen(result),"\n\t|Checksum teorico:  %02x %02x \n\t|Checksum Calculado: ", chsum_t, chsum_c);
+  checksum(T, ihl, chsum_t, chsum_c);
 
 
   sprintf(result+strlen(result),"\n\t|Ip de origen: ");
@@ -273,11 +262,11 @@ int IP(char T[])
   }
 
   if((T[23]&31)==1)
-  ICMP(ihl+14,T);
+    ICMP(ihl+14,T);
   if((T[23]&31)==6)
-  TCP(ihl+14,T);
+    TCP(ihl+14,T);
   if((T[23]&31)==17)
-  UDP(ihl+14,T,T[14]&15);
+    UDP(ihl+14,T,T[14]&15);
   return 1;
 }
 
@@ -408,12 +397,17 @@ void ICMP(unsigned  char tam,char T[])
     sprintf(result+strlen(result),"Tracarouta\n");
     break;
   }
-  sprintf(result+strlen(result),"\n\t|Checksum:  %02x %02x",T[tam+2],T[tam+3]);
+  
+  sprintf(result+strlen(result),"\t|Checksum:  %02x %02x",T[tam+2],T[tam+3]);
+  
   unsigned char *ptr=T;
+  
   for(int i=0;i<=tam+7;ptr++,i++);
+  
   sprintf(result+strlen(result),"\n\t|Datos: ");
+
   for(;*ptr!='\0';ptr++)
-  sprintf(result+strlen(result),"%c ",*ptr);
+    sprintf(result+strlen(result),"%c ",*ptr);
 }
 
 
@@ -425,7 +419,7 @@ void TCP(unsigned char tam,unsigned char T[])
       sprintf(result+strlen(result),"\n\t|Trama urgente :): ");
       sprintf(result+strlen(result),"\n\t|MAc destino: ");
       for(int i=0;i<4;i++)
-      sprintf(result+strlen(result),"%02x:",T[i]);
+        sprintf(result+strlen(result),"%02x:",T[i]);
       sprintf(result+strlen(result),"\n\n");
     }
 
@@ -433,7 +427,7 @@ void TCP(unsigned char tam,unsigned char T[])
     {
       sprintf(result+strlen(result),"\n\t|Opciones TCP: ");
       for(int i=tam+20;i<(T[tam+12]>>4)*4+tam;i++)
-      sprintf(result+strlen(result),"%02x ",T[i]);
+        sprintf(result+strlen(result),"%02x ",T[i]);
     }
 }
 
@@ -449,7 +443,6 @@ void checksum(unsigned char T[],unsigned char tam,unsigned char haha,unsigned ch
 {
   short aux=0;
   unsigned char par,impar;
-  FILE *f=fopen("checksum.txt","w");
   for(int i=14;i<tam+14;i++)
   {
 
@@ -460,7 +453,6 @@ void checksum(unsigned char T[],unsigned char tam,unsigned char haha,unsigned ch
     }
     if((i%2)==0)
     {
-      fprintf(f,"Posicion: %d\n",i);
       aux+=T[i];
     }
 
@@ -468,7 +460,6 @@ void checksum(unsigned char T[],unsigned char tam,unsigned char haha,unsigned ch
   impar=aux>>8;
   par=aux;
   aux=0;
-fprintf(f,"\n\n");
   for(int i=14;i<tam+14;i++)
   {
 
@@ -479,7 +470,6 @@ fprintf(f,"\n\n");
     }
     if((i%2)==1)
     {
-      fprintf(f,"Posicion: %d\n",i);
       aux+=T[i];
     }
 
@@ -493,5 +483,4 @@ fprintf(f,"\n\n");
   sprintf(result+strlen(result),"  %02x  %02x ",par,impar);
   if(par==haha && impar==jaja)
   sprintf(result+strlen(result),"\n\t|Checksum correcto");
-  fclose(f);
 }
