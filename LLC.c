@@ -3,7 +3,7 @@
 void Read_File(char *file_name)
 {
     FILE *file = fopen(file_name, "r");
-    unsigned char tramaAux[256];
+    unsigned char frameAux[256];
     int c, flag = 0, tam_aux = 0;
     if (file == NULL)
         return;
@@ -18,20 +18,20 @@ void Read_File(char *file_name)
             {
                 flag = 0;
                 count++;
-                printf("+---------------------------------------------+\n");
-                printf(" Trama %d\n", count);
-                printf("+---------------------------------------------+\n");
-                imprimeTrama(tramaAux, ++tam_aux);
-                printf("+---------------------------------------------+\n");
+                printf("+--------------------------------------------------------+\n");
+                printf(" \t\t\tTrama %d\n", count);
+                printf("+--------------------------------------------------------+\n");
+                printFrame(frameAux, ++tam_aux);
+                printf("+--------------------------------------------------------+\n");
                 tam_aux = 0;
-                LLC_Analyser(tramaAux);
-                memset(&tramaAux[0], 0, sizeof(tramaAux));
+                LLC_Analyser(frameAux);
+                memset(&frameAux[0], 0, sizeof(frameAux));
                 continue;
             }
             if ((char)c != '\n')
             {
                 char tmp;
-                fscanf(file, "%hhx", &tramaAux[tam_aux++]);
+                fscanf(file, "%hhx", &frameAux[tam_aux++]);
             }
         }
         if ((char)c == '{')
@@ -39,28 +39,37 @@ void Read_File(char *file_name)
     }
 }
 
-void imprimeTrama(unsigned char *trama, int tam)
+void printFrame(unsigned char *frame, int tam)
 {
-    for (int i = 0; i < tam; i++)
+    int j = 0;
+    printf(" %.2X\t", 16*j);
+
+    for (int i = 0; i < tam-1; i++)
     {
         if (i % 16 == 0 && i != 0)
+        {
             printf("\n");
-        printf("%.2X ", trama[i]);
+            j++;
+            printf(" %.2X\t", 16*j);
+        }
+        if (i % 8 == 0)
+            printf(" ");
+        printf("%.2X ", frame[i]);
     }
     printf("\n");
 }
 
-void LLC_Analyser(unsigned char *trama)
+void LLC_Analyser(unsigned char *frame)
 {
     unsigned char MACOrigen[20], MACDestino[20];
-    int tam = trama[12] + trama[13];
-    int dsap = trama[14];
-    int ssap = trama[15];
-    int contr_1 = trama[16];
-    int contr_2 = trama[17];
+    int tam = frame[12] + frame[13];
+    int dsap = frame[14];
+    int ssap = frame[15];
+    int contr_1 = frame[16];
+    int contr_2 = frame[17];
 
-    sprintf(MACOrigen, "%02X:%02X:%02X:%02X:%02X:%02X", trama[0], trama[1], trama[2], trama[3], trama[4], trama[5]);
-    sprintf(MACDestino, "%02X:%02X:%02X:%02X:%02X:%02X", trama[6], trama[7], trama[8], trama[9], trama[10], trama[11]);
+    sprintf(MACOrigen, "%02X:%02X:%02X:%02X:%02X:%02X", frame[0], frame[1], frame[2], frame[3], frame[4], frame[5]);
+    sprintf(MACDestino, "%02X:%02X:%02X:%02X:%02X:%02X", frame[6], frame[7], frame[8], frame[9], frame[10], frame[11]);
     printf(" MAC Origen:\t%s\n MAC Destino:\t%s\n Longitud:\t%d\n", MACOrigen, MACDestino, tam);
 
     DSAP_Analyser(dsap);
@@ -194,7 +203,7 @@ void Control(int byte_1, int byte_2)
     printf(" Control:\t");
     if (bits_contr_1[7] == 0)
     {
-        printf("Trama de información");
+        printf("frame de información");
         char bits_aux[8];
         memcpy(bits_aux, bits_contr_1, 7);
         bits_aux[7] = 0;
@@ -206,7 +215,7 @@ void Control(int byte_1, int byte_2)
     }
     else if (bits_contr_1[6] == 0 && bits_contr_1[7] == 1)
     {
-        printf("Trama de supervision");
+        printf("frame de supervision");
         if (bits_contr_1[4] == 0 && bits_contr_1[5] == 0)
             printf("\tReceiver Ready");
         else if (bits_contr_1[4] == 0 && bits_contr_1[5] == 1)
@@ -221,8 +230,8 @@ void Control(int byte_1, int byte_2)
     }
 
     else
-    { //Trama no numerada
-        printf("Trama no numerada");
+    { //frame no numerada
+        //printf("frame no numerada");
         if (bits_contr_1[0] == 0 && bits_contr_1[1] == 0 &&
             bits_contr_1[2] == 0 && bits_contr_1[4] == 1 && bits_contr_1[5] == 1)
         {

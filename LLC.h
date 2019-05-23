@@ -12,12 +12,12 @@
 #include <stdbool.h>
 #include <math.h>
 
-void imprimeTrama(unsigned char * trama, int tam);
+void printFrame(unsigned char *frame, int tam);
 void Read_File(char* file_name);
-void LLC_Analyser(unsigned char * trama);
+void LLC_Analyser(unsigned char *frame);
 void DSAP_Analyser(int dsap);
 void SSAP_Analyser(int ssap);
 void SAP_Switch(int n);
 void Control(int byte_1, int byte_2);
-void Int_to_Binary_String(char* buffer, int num);
-int Binary_String_to_Int(char* cadena);
+void Int_to_Binary_String(char *buffer, int num);
+int Binary_String_to_Int(char *cadena);
