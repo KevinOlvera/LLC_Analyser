@@ -39,6 +39,29 @@ void Read_File(char *file_name)
     }
 }
 
+void Read_Network()
+{
+    int packet_socket, index;
+    
+	packet_socket = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+
+	if(packet_socket == -1)
+	{
+		perror("Error al abrir el socket");
+		exit(1);
+	}
+	else
+	{
+		perror("Exito al abrir el socket");
+		index = getData(packet_socket);
+
+        //Recibir trama de la red
+        receiveFrame(packet_socket, index);
+	}
+
+	close(packet_socket);
+}
+
 void printFrame(unsigned char *frame, int tam)
 {
     int j = 0;

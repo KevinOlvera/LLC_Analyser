@@ -1,4 +1,5 @@
 #include "LLC.c"
+#include "comnet.c"
 
 int main(int argc, char const *argv[])
 {
@@ -21,6 +22,7 @@ int main(int argc, char const *argv[])
         break;
 
         case '2':
+            Read_Network();
         break;
 
         case '3':

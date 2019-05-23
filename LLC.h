@@ -14,6 +14,7 @@
 
 void printFrame(unsigned char *frame, int tam);
 void Read_File(char* file_name);
+void Read_Network();
 void LLC_Analyser(unsigned char *frame);
 void DSAP_Analyser(int dsap);
 void SSAP_Analyser(int ssap);
